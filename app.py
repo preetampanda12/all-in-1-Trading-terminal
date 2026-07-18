@@ -237,12 +237,15 @@ app.add_middleware(
 )
 
 def fetch_klines_sync(symbol: str, interval: str, limit: int = 100):
-    r = requests.get(
-        "https://api.binance.com/api/v3/klines",
-        params={"symbol": symbol, "interval": interval, "limit": limit},
-        timeout=10
-    )
-    if r.status_code != 200:
+    try:
+        r = requests.get(
+            "https://fapi.binance.com/fapi/v1/klines",
+            params={"symbol": symbol, "interval": interval, "limit": limit},
+            timeout=10
+        )
+        if r.status_code != 200:
+            return []
+    except Exception:
         return []
     return [{
         "time":   int(row[0]) // 1000,

@@ -238,23 +238,32 @@ app.add_middleware(
 
 def fetch_klines_sync(symbol: str, interval: str, limit: int = 100):
     try:
+        # Map Binance intervals to Bybit intervals
+        interval_map = {"1m": "1", "3m": "3", "5m": "5", "15m": "15", "30m": "30", "1h": "60", "4h": "240", "1d": "D"}
+        bybit_interval = interval_map.get(interval, "60")
+        
         r = requests.get(
-            "https://fapi.binance.com/fapi/v1/klines",
-            params={"symbol": symbol, "interval": interval, "limit": limit},
+            "https://api.bybit.com/v5/market/kline",
+            params={"category": "linear", "symbol": symbol, "interval": bybit_interval, "limit": limit},
             timeout=10
         )
         if r.status_code != 200:
             return []
+        
+        data = r.json().get("result", {}).get("list", [])
+        # Bybit returns newest first, so we reverse it
+        data.reverse()
+        
+        return [{
+            "time":   int(row[0]) // 1000,
+            "open":   float(row[1]),
+            "high":   float(row[2]),
+            "low":    float(row[3]),
+            "close":  float(row[4]),
+            "volume": float(row[5])
+        } for row in data]
     except Exception:
         return []
-    return [{
-        "time":   int(row[0]) // 1000,
-        "open":   float(row[1]),
-        "high":   float(row[2]),
-        "low":    float(row[3]),
-        "close":  float(row[4]),
-        "volume": float(row[5])
-    } for row in r.json()]
 
 @app.get("/api/chart-data")
 async def get_chart_data(symbol: str = "BTCUSDT", interval: str = "1h"):

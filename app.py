@@ -128,9 +128,11 @@ async def fetch_aggregated_depth_and_save(raw_symbol: str, current_price: float)
     merged_bids = {}
     merged_asks = {}
     for ob in results:
-        for p, q in ob.get('bids', []):
+        for item in ob.get('bids', []):
+            p, q = item[0], item[1]
             merged_bids[p] = merged_bids.get(p, 0) + q
-        for p, q in ob.get('asks', []):
+        for item in ob.get('asks', []):
+            p, q = item[0], item[1]
             merged_asks[p] = merged_asks.get(p, 0) + q
 
     leverages = [5, 10, 25, 50, 100]

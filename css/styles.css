@@ -1,0 +1,2663 @@
+/* ============================================================
+   CryptoTerminal — Premium Dark Trading Terminal
+   Design System + Component Styles
+   ============================================================ */
+
+/* ----------------------------------------------------------
+   1. DESIGN TOKENS
+   ---------------------------------------------------------- */
+:root {
+  /* Backgrounds */
+  --bg-primary: #0a0a0f;
+  --bg-surface: #12121a;
+  --bg-elevated: #1a1a28;
+  --bg-input: #1e1e2e;
+  --bg-hover: #252538;
+
+  /* Text */
+  --text-primary: #e8e8ed;
+  --text-secondary: #8b8b9a;
+  --text-muted: #55556a;
+
+  /* Borders */
+  --border: #2a2a3a;
+  --border-light: #353548;
+  --grid: #1a1a2a;
+
+  /* Accents */
+  --green: #00d4aa;
+  --green-dim: rgba(0, 212, 170, 0.15);
+  --red: #ff4976;
+  --red-dim: rgba(255, 73, 118, 0.15);
+  --blue: #4a9eff;
+  --blue-dim: rgba(74, 158, 255, 0.15);
+  --amber: #ffb800;
+
+  /* Typography */
+  --font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", monospace;
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+}
+
+/* ----------------------------------------------------------
+   2. RESET & BASE
+   ---------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+html,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Apply 80% zoom only to UI panels so chart canvas coordinates remain accurate */
+.toolbar, 
+.active-indicators, 
+.watchlist-panel, 
+.settings-panel, 
+.auth-modal .modal-content, 
+.dropdown,
+.ohlcv-legend {
+  zoom: 0.8;
+}
+
+::selection {
+  background: rgba(74, 158, 255, 0.3);
+  color: #fff;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+input {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+
+/* ----------------------------------------------------------
+   3. TYPOGRAPHY
+   ---------------------------------------------------------- */
+.mono {
+  font-family: var(--font-mono);
+}
+
+.text-xs {
+  font-size: 10px;
+}
+
+.text-sm {
+  font-size: 11px;
+}
+
+.text-base {
+  font-size: 12px;
+}
+
+.text-md {
+  font-size: 13px;
+}
+
+.text-lg {
+  font-size: 16px;
+}
+
+.text-xl {
+  font-size: 20px;
+}
+
+/* ----------------------------------------------------------
+   4. LAYOUT
+   ---------------------------------------------------------- */
+.main-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+
+/* ----------------------------------------------------------
+   5. TOOLBAR
+   ---------------------------------------------------------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 12px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  position: relative;
+  z-index: 100;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 1;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------------------------
+   5a. LOGO
+   ---------------------------------------------------------- */
+.logo {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, var(--green), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  white-space: nowrap;
+  padding: 0 4px;
+  user-select: none;
+}
+
+/* ----------------------------------------------------------
+   5b. TOOLBAR BUTTONS (shared)
+   ---------------------------------------------------------- */
+.toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.toolbar-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.toolbar-btn.active {
+  background: var(--blue-dim);
+  color: var(--blue);
+}
+
+/* ----------------------------------------------------------
+   6. SYMBOL SELECTOR
+   ---------------------------------------------------------- */
+.symbol-selector {
+  position: relative;
+}
+
+.symbol-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.symbol-btn:hover {
+  border-color: var(--border-light);
+  background: var(--bg-hover);
+}
+
+.chevron-icon {
+  width: 12px;
+  height: 12px;
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.symbol-selector.open .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.symbol-selector .dropdown {
+  width: 260px;
+  top: calc(100% + 6px);
+  left: 0;
+}
+
+.symbol-selector .dropdown input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--bg-input);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-primary);
+}
+
+.symbol-selector .dropdown input::placeholder {
+  color: var(--text-muted);
+}
+
+.dropdown-items {
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+/* ----------------------------------------------------------
+   7. TIMEFRAME BUTTONS
+   ---------------------------------------------------------- */
+.timeframe-group,
+.chart-type-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.timeframe-group button,
+.chart-type-group button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.timeframe-group button:hover,
+.chart-type-group button:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.timeframe-group button.active {
+  background: var(--blue-dim);
+  color: var(--blue);
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.12);
+}
+
+/* ----------------------------------------------------------
+   8. CHART TYPE BUTTONS
+   ---------------------------------------------------------- */
+.chart-type-group button.active {
+  background: var(--blue-dim);
+  color: var(--blue);
+  box-shadow: 0 0 8px rgba(74, 158, 255, 0.12);
+}
+
+.chart-type-group button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ----------------------------------------------------------
+   9. INDICATORS GROUP
+   ---------------------------------------------------------- */
+.indicators-group {
+  position: relative;
+}
+
+#indicators-btn {
+  font-size: 12px;
+}
+
+.indicators-group .dropdown {
+  width: 280px;
+  top: calc(100% + 6px);
+  left: 0;
+}
+
+.indicators-group .dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.indicators-group .dropdown-item span:first-child {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.indicators-group .dropdown-item span:last-child {
+  font-size: 11px;
+}
+
+.indicators-group .dropdown-item.selected {
+  background: var(--blue-dim);
+}
+
+.indicators-group .dropdown-item.selected span:first-child {
+  color: var(--blue);
+}
+
+/* Inline period input for SMA/EMA */
+.indicator-period-input {
+  width: 48px;
+  height: 24px;
+  padding: 0 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  -moz-appearance: textfield;
+  flex-shrink: 0;
+}
+
+.indicator-period-input::-webkit-outer-spin-button,
+.indicator-period-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.indicator-period-input:focus {
+  border-color: var(--blue) !important;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--blue-dim);
+}
+
+/* ----------------------------------------------------------
+   10. PRICE INFO BAR
+   ---------------------------------------------------------- */
+.price-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.price-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.current-price {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  transition: color var(--transition-fast);
+}
+
+.price-change {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.price-change-percent {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.price-up .current-price,
+.price-up .price-change,
+.price-up .price-change-percent {
+  color: var(--green);
+}
+
+.price-up .price-change-percent {
+  background: var(--green-dim);
+}
+
+.price-down .current-price,
+.price-down .price-change,
+.price-down .price-change-percent {
+  color: var(--red);
+}
+
+.price-down .price-change-percent {
+  background: var(--red-dim);
+}
+
+.price-details {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.price-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.price-detail .label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.price-detail .mono {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+/* ----------------------------------------------------------
+   11. CHART AREA
+   ---------------------------------------------------------- */
+.chart-area {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-primary);
+  overflow: hidden;
+  touch-action: none;
+}
+
+#chart-container {
+  position: absolute;
+  inset: 0;
+}
+
+/* Loading spinner */
+.chart-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 5;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.chart-loading span {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* ----------------------------------------------------------
+   12. OHLCV LEGEND
+   ---------------------------------------------------------- */
+.ohlcv-legend {
+  position: absolute;
+  top: 10px;
+  left: 60px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: rgba(18, 18, 26, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(42, 42, 58, 0.5);
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.legend-label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+.legend-label:first-child {
+  margin-left: 0;
+}
+
+.ohlcv-legend .mono {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ohlcv-legend .text-green {
+  color: var(--green);
+}
+
+.ohlcv-legend .text-red {
+  color: var(--red);
+}
+
+/* ----------------------------------------------------------
+   12b. CANDLE TIMER
+   ---------------------------------------------------------- */
+.candle-timer {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(18, 18, 26, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(42, 42, 58, 0.6);
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  color: var(--text-secondary);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.candle-timer .timer-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  animation: timerPulse 1s ease-in-out infinite;
+}
+
+.candle-timer .timer-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.candle-timer .timer-value {
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: center;
+}
+
+.candle-timer.urgent .timer-dot {
+  background: var(--amber);
+}
+.candle-timer.urgent .timer-value {
+  color: var(--amber);
+}
+
+.candle-timer.closing .timer-dot {
+  background: var(--red);
+  animation: timerPulse 0.3s ease-in-out infinite;
+}
+.candle-timer.closing .timer-value {
+  color: var(--red);
+}
+
+@keyframes timerPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+/* ----------------------------------------------------------
+   13. WATCHLIST PANEL
+   ---------------------------------------------------------- */
+.watchlist-panel {
+  display: none;
+}
+
+.watchlist-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.watchlist-header h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+  font-size: 14px;
+}
+
+.icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* Watchlist search */
+.watchlist-search-container {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* ----------------------------------------------------------
+   16. MODALS
+   ---------------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  transition: opacity var(--transition-fast);
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.8);
+  width: 90%;
+  max-width: 400px;
+  z-index: 1001;
+  transition: all var(--transition-fast);
+}
+
+.modal.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -45%) scale(0.95);
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.modal-close {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: var(--text-muted);
+  transition: all var(--transition-fast);
+}
+
+.modal-close:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+/* Modal form elements */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+  transition: border-color var(--transition-fast);
+}
+
+.form-group input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+}
+
+.primary-btn {
+  background: var(--blue);
+  color: white;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition-fast);
+}
+
+.primary-btn:hover {
+  background: #3a8eef;
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  height: 36px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.secondary-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ----------------------------------------------------------
+   16a. AUTH MODAL (Premium)
+   ---------------------------------------------------------- */
+.auth-modal {
+  max-width: 420px;
+  overflow: hidden;
+  border: 1px solid rgba(74, 158, 255, 0.15);
+  background: linear-gradient(
+    165deg,
+    rgba(18, 18, 26, 0.98) 0%,
+    rgba(10, 10, 15, 0.99) 100%
+  );
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(74, 158, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.auth-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  background: linear-gradient(
+    135deg,
+    rgba(74, 158, 255, 0.08) 0%,
+    rgba(0, 212, 170, 0.05) 100%
+  );
+  border-bottom: 1px solid var(--border);
+}
+
+.auth-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.auth-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--blue-dim), rgba(0, 212, 170, 0.12));
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+  flex-shrink: 0;
+}
+
+.auth-modal-header h2 {
+  font-size: 17px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--text-primary), var(--blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-subtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.auth-modal .modal-body {
+  padding: 24px;
+}
+
+/* Input wrapper with icon */
+.input-wrapper {
+  position: relative;
+}
+
+.input-wrapper .input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color var(--transition-fast);
+}
+
+.input-wrapper input {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px 0 40px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: all var(--transition-fast);
+}
+
+.input-wrapper input:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.12);
+}
+
+.input-wrapper input:focus + .input-icon,
+.input-wrapper input:focus ~ .input-icon {
+  color: var(--blue);
+}
+
+.input-wrapper input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Error / success message */
+.auth-message {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
+.auth-message.error {
+  background: var(--red-dim);
+  color: var(--red);
+  border: 1px solid rgba(255, 73, 118, 0.2);
+}
+
+.auth-message.success {
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+/* Primary auth button */
+.auth-primary-btn {
+  width: 100%;
+  height: 44px;
+  margin-top: 20px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, #4a9eff 0%, #3a7be0 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 16px rgba(74, 158, 255, 0.25);
+}
+
+.auth-primary-btn:hover {
+  background: linear-gradient(135deg, #5aa8ff 0%, #4a8bf0 100%);
+  box-shadow: 0 6px 24px rgba(74, 158, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.auth-primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.2);
+}
+
+/* Divider */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-divider span {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Secondary auth button */
+.auth-secondary-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.auth-secondary-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--border-light);
+}
+
+/* Logged-in profile */
+.auth-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}
+
+.auth-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green-dim), var(--blue-dim));
+  border: 1px solid rgba(0, 212, 170, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+.auth-profile-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.auth-profile-email {
+  font-size: 13px;
+  color: var(--green);
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+/* Sync status indicator */
+.auth-sync-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(0, 212, 170, 0.06);
+  border: 1px solid rgba(0, 212, 170, 0.15);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--green);
+}
+
+.sync-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: syncPulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+@keyframes syncPulse {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 8px var(--green);
+  }
+  50% {
+    opacity: 0.5;
+    box-shadow: 0 0 4px var(--green);
+  }
+}
+
+.auth-logout-btn {
+  margin-top: 16px;
+  color: var(--red);
+  border-color: rgba(255, 73, 118, 0.25);
+}
+
+.auth-logout-btn:hover {
+  background: var(--red-dim);
+  border-color: rgba(255, 73, 118, 0.4);
+  color: var(--red);
+}
+
+/* ----------------------------------------------------------
+   16b. AUTH MODAL — MOBILE
+   ---------------------------------------------------------- */
+@media (max-width: 500px) {
+  .auth-modal {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUpModal 300ms ease-out;
+  }
+
+  .auth-modal.hidden {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+
+  .auth-modal-header {
+    padding: 20px;
+  }
+
+  .auth-modal .modal-body {
+    padding: 20px;
+    padding-bottom: 32px; /* Extra safe-area padding for gesture bar */
+  }
+
+  .auth-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .input-wrapper input {
+    height: 48px;
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
+
+  .auth-primary-btn {
+    height: 48px;
+    font-size: 15px;
+  }
+
+  .auth-secondary-btn {
+    height: 48px;
+    font-size: 15px;
+  }
+}
+
+@keyframes slideUpModal {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+#watchlist-search {
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: var(--text-primary);
+  transition: border-color var(--transition-fast);
+}
+
+#watchlist-search:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+}
+
+#watchlist-search::placeholder {
+  color: var(--text-muted);
+}
+
+/* Watchlist items container */
+.watchlist-items {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* ----------------------------------------------------------
+   14. WATCHLIST ITEM
+   ---------------------------------------------------------- */
+.watchlist-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  user-select: none;
+}
+
+.watchlist-item:hover {
+  background: var(--bg-elevated);
+}
+
+.watchlist-item.active {
+  background: var(--bg-elevated);
+  border-left: 2px solid var(--blue);
+  padding-left: 14px;
+}
+
+.watchlist-item-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.watchlist-item-symbol {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.watchlist-item-symbol .pair-suffix {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.watchlist-item-name {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.watchlist-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.watchlist-item-price {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.watchlist-item-change {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.watchlist-item-change.up {
+  color: var(--green);
+}
+
+.watchlist-item-change.down {
+  color: var(--red);
+}
+
+/* ----------------------------------------------------------
+   15. SCROLLBAR STYLING
+   ---------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-light);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+/* ----------------------------------------------------------
+   16. ANIMATIONS & MICRO-INTERACTIONS
+   ---------------------------------------------------------- */
+@keyframes priceFlashGreen {
+  0% {
+    background-color: var(--green-dim);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes priceFlashRed {
+  0% {
+    background-color: var(--red-dim);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.flash-green {
+  animation: priceFlashGreen 600ms ease-out;
+}
+
+.flash-red {
+  animation: priceFlashRed 600ms ease-out;
+}
+
+/* ----------------------------------------------------------
+   17. DROPDOWN (Generic)
+   ---------------------------------------------------------- */
+.dropdown {
+  display: none;
+  position: absolute;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  z-index: 200;
+  overflow: hidden;
+  animation: slideDown 200ms ease-out;
+}
+
+.dropdown.open {
+  display: block;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.dropdown-item:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.dropdown-item[aria-checked="true"] {
+  background: var(--bg-elevated);
+  border-left: 2px solid var(--blue);
+  color: var(--blue);
+}
+
+.dropdown-item.active {
+  background: var(--blue-dim);
+  color: var(--blue);
+}
+
+/* ----------------------------------------------------------
+   18. ACTIVE INDICATORS BAR
+   ---------------------------------------------------------- */
+.active-indicators {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  height: 28px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.active-indicators.hidden {
+  display: none;
+}
+
+/* ----------------------------------------------------------
+   19. INDICATOR CHIP
+   ---------------------------------------------------------- */
+.tv-legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  gap: 6px;
+  margin-bottom: 2px;
+  pointer-events: auto; /* Since container has pointer-events: none */
+}
+
+.tv-legend-title {
+  font-weight: 600;
+}
+
+.tv-legend-values {
+  display: flex;
+  gap: 4px;
+}
+
+.tv-legend-value {
+  opacity: 0.9;
+}
+
+.tv-legend-close {
+  display: none;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.tv-legend-item:hover .tv-legend-close {
+  display: inline-block;
+}
+
+.tv-legend-close:hover {
+  color: var(--text-primary);
+}
+
+/* ----------------------------------------------------------
+   20. RESPONSIVE
+   ---------------------------------------------------------- */
+.watchlist-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.watchlist-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ----------------------------------------------------------
+   21. UTILITY CLASSES
+   ---------------------------------------------------------- */
+.text-green {
+  color: var(--green);
+}
+
+.text-red {
+  color: var(--red);
+}
+
+.text-blue {
+  color: var(--blue);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ----------------------------------------------------------
+   22. GLASSMORPHISM & PREMIUM EFFECTS
+   ---------------------------------------------------------- */
+
+/* Subtle noise texture overlay for depth */
+.toolbar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.015) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Chart area subtle gradient overlay */
+.chart-area::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 15, 0.6) 0%,
+    transparent 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Watchlist header glass effect */
+.watchlist-header {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    transparent 100%
+  );
+}
+
+/* Focus glow for inputs */
+.symbol-btn:focus-visible,
+#watchlist-search:focus-visible {
+  outline: 2px solid rgba(74, 158, 255, 0.4);
+  outline-offset: 1px;
+}
+
+/* Active item glow */
+.watchlist-item.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--blue), var(--green));
+  box-shadow: 0 0 10px rgba(74, 158, 255, 0.3);
+}
+
+/* Tooltip-like label styling */
+.price-detail .label::after {
+  content: "";
+  display: block;
+}
+
+/* Button pressed effect */
+.timeframe-group button:active,
+.chart-type-group button:active,
+.toolbar-btn:active {
+  transform: scale(0.96);
+}
+
+/* Dropdown backdrop for mobile */
+.dropdown-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 190;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  display: none;
+}
+
+.dropdown-backdrop.open {
+  display: block;
+  animation: fadeIn 150ms ease-out;
+}
+
+/* ----------------------------------------------------------
+   23. LOADING STATES
+   ---------------------------------------------------------- */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-elevated) 25%,
+    var(--bg-hover) 50%,
+    var(--bg-elevated) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ----------------------------------------------------------
+   24. MISC & POLISH
+   ---------------------------------------------------------- */
+
+/* Subtle separator between toolbar groups */
+.toolbar-left > *:not(.toolbar-divider) {
+  position: relative;
+}
+
+/* Smooth hover transitions on all interactive elements */
+button,
+.dropdown-item,
+.watchlist-item,
+input {
+  transition: all var(--transition-fast);
+}
+
+/* Symbol button active state */
+.symbol-selector.open .symbol-btn {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+}
+
+/* High-contrast hover for watchlist */
+.watchlist-item:hover .watchlist-item-symbol {
+  color: #fff;
+}
+
+/* Subtle animated border for selected watchlist item */
+.watchlist-item.active {
+  position: relative;
+}
+
+/* Volume bar mini-visualization placeholder */
+.watchlist-item-volume {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.watchlist-item-volume-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+  border-radius: 1px;
+  transition: width var(--transition-normal);
+}
+
+/* Price flash for watchlist items */
+.watchlist-item.flash-green .watchlist-item-price {
+  animation: priceFlashGreen 600ms ease-out;
+}
+
+.watchlist-item.flash-red .watchlist-item-price {
+  animation: priceFlashRed 600ms ease-out;
+}
+
+/* ----------------------------------------------------------
+   SETTINGS PANEL
+   ---------------------------------------------------------- */
+
+/* Backdrop overlay */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 8999;
+  transition: opacity var(--transition-normal);
+}
+
+/* Panel */
+.settings-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  max-height: 85vh;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 200ms ease;
+}
+
+.settings-panel.hidden,
+.settings-overlay.hidden {
+  display: none;
+}
+
+/* Header */
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.settings-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+
+.settings-close:hover {
+  color: var(--text-primary);
+}
+
+/* Body */
+.settings-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.setting-section-title {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.setting-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 14px 0;
+}
+
+/* Row */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.setting-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+/* Text / number / time inputs */
+.setting-input {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 5px 10px;
+  width: 110px;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.setting-input:focus {
+  border-color: var(--blue);
+}
+
+/* input[type=time] Webkit fix */
+.setting-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+/* Color input */
+.setting-input-color {
+  -webkit-appearance: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: 40px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.setting-input-color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.setting-input-color::-webkit-color-swatch {
+  border: none;
+  border-radius: 2px;
+}
+
+/* Range slider wrapper */
+.setting-range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.setting-range-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--blue);
+  min-width: 34px;
+  text-align: right;
+}
+
+/* Range slider custom */
+.setting-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  outline: none;
+}
+
+.setting-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  border: 2px solid var(--bg-surface);
+  box-shadow: 0 0 6px rgba(74, 158, 255, 0.4);
+  transition: transform var(--transition-fast);
+}
+
+.setting-range::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+.setting-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--blue);
+  cursor: pointer;
+  border: 2px solid var(--bg-surface);
+}
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  background: var(--border);
+  border-radius: 20px;
+  transition: background var(--transition-fast);
+}
+
+.toggle-slider::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 3px;
+  width: 14px;
+  height: 14px;
+  background: var(--text-secondary);
+  border-radius: 50%;
+  transition:
+    transform var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--green-dim);
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(18px);
+  background: var(--green);
+}
+
+/* Footer */
+.settings-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.settings-btn-primary,
+.settings-btn-secondary {
+  padding: 6px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.settings-btn-primary {
+  background: var(--blue);
+  color: #fff;
+}
+
+.settings-btn-primary:hover {
+  background: #5daaff;
+}
+
+.settings-btn-secondary {
+  background: var(--bg-hover);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
+.settings-btn-secondary:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+/* ----------------------------------------------------------
+   DRAWING TOOLBAR
+   ---------------------------------------------------------- */
+
+.drawing-toolbar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.draw-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.draw-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.draw-btn.active {
+  color: var(--blue);
+  background: var(--blue-dim);
+}
+
+/* ----------------------------------------------------------
+   HIDE TRADINGVIEW LOGO
+   ---------------------------------------------------------- */
+#chart-container a,
+.tv-lightweight-charts a {
+  display: none !important;
+}
+
+/* ----------------------------------------------------------
+   REPLAY PANEL
+   ---------------------------------------------------------- */
+.replay-panel {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 6px 12px;
+  display: flex;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  transition: all 0.2s ease;
+}
+
+.replay-panel.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -20px);
+}
+
+.replay-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.replay-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.replay-speed-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.replay-speed-control input[type="range"] {
+  width: 80px;
+  accent-color: var(--blue);
+}
+
+.replay-panel .icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+}
+
+.replay-panel .icon-btn.active {
+  background: var(--blue-dim);
+  color: var(--blue);
+}
+
+.replay-panel .icon-btn.close-btn:hover {
+  color: var(--red);
+  background: var(--red-dim);
+}
+
+/* Chart selection mode crosshair text */
+.replay-selection-toast {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--blue);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  font-size: 13px;
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
+  z-index: 50;
+  pointer-events: none;
+}
+
+/* ----------------------------------------------------------
+   GO TO PRESENT BUTTON
+   ---------------------------------------------------------- */
+.go-to-present {
+  position: absolute;
+  bottom: 24px;
+  right: 64px; /* inside the price scale */
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(37, 37, 56, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(74, 158, 255, 0.2);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  transition: all var(--transition-fast);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.go-to-present:hover {
+  background: var(--blue-dim);
+  color: var(--blue);
+  border-color: rgba(74, 158, 255, 0.4);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+}
+
+.go-to-present:active {
+  transform: translateY(0) scale(0.95);
+}
+
+.go-to-present.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px) scale(0.9);
+}
+
+/* ----------------------------------------------------------
+   SCALE TOGGLE BUTTON (LOG)
+   ---------------------------------------------------------- */
+.scale-toggle-btn {
+  position: absolute;
+  bottom: 28px;
+  right: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: lowercase;
+  cursor: pointer;
+  z-index: 50;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.scale-toggle-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.scale-toggle-btn.active {
+  color: var(--blue);
+  background: var(--blue-dim);
+}
+
+/* =============================================================
+   19. RESPONSIVE — MOBILE FIRST REDESIGN
+   ============================================================= */
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── 900px: hide watchlist sidebar ─────────────────────────── */
+@media (max-width: 900px) {
+  .watchlist-panel {
+    display: none;
+  }
+
+  .watchlist-panel.mobile-open {
+    display: flex;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 300;
+    width: 280px;
+    box-shadow: -8px 0 40px rgba(0, 0, 0, 0.7);
+    animation: slideInRight 250ms ease-out;
+  }
+
+  .watchlist-toggle {
+    display: inline-flex;
+  }
+}
+
+/* ── 768px & 600px: 2-Row Responsive Toolbar ──────────────────────────── */
+@media (max-width: 768px) {
+  .toolbar {
+    height: auto;
+    min-height: 52px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 8px;
+    gap: 8px;
+    overflow: visible;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    display: contents;
+  }
+
+  /* Default all children to order 10 so unspecified items (like Replay) drop to the bottom row */
+  .toolbar-left > *,
+  .toolbar-right > * {
+    order: 10;
+  }
+
+  .toolbar-divider {
+    display: none;
+  }
+
+  /* --- Top Row Elements --- */
+  .logo {
+    display: flex;
+    order: 1;
+    font-size: 14px;
+  }
+
+  .price-info {
+    order: 2;
+    flex: 1;
+    margin-left: 12px;
+    justify-content: flex-start;
+  }
+
+  #auth-btn {
+    order: 3;
+  }
+
+  /* --- Bottom Row Elements --- */
+  .symbol-selector {
+    order: 4;
+    margin-top: 8px;
+  }
+
+  .timeframe-group {
+    order: 5;
+    margin-top: 8px;
+    margin-left: 8px;
+  }
+
+  .indicators-group {
+    order: 6;
+    margin-top: 8px;
+    margin-left: 8px;
+  }
+
+  /* Compact timeframe buttons */
+  .timeframe-group button {
+    padding: 0 6px;
+    font-size: 11px;
+    height: 28px;
+  }
+
+  /* Hide indicators / chart-type text labels */
+  .chart-type-group button {
+    font-size: 11px;
+    padding: 0 6px;
+  }
+
+  /* Hide bid/ask/spread detail row */
+  .price-details {
+    display: none;
+  }
+
+  /* Price main stays visible but compact */
+  .current-price {
+    font-size: 16px;
+  }
+
+  .price-change,
+  .price-change-percent {
+    font-size: 11px;
+  }
+
+  #auth-btn .auth-btn-label {
+    display: none;
+  }
+
+  #auth-btn {
+    padding: 0 8px;
+    min-width: 32px;
+  }
+}
+
+/* ── 600px: full mobile layout ──────────────────────────────── */
+@media (max-width: 600px) {
+  /* Body: toolbar | chart | bottom-toolbar */
+  body {
+    grid-template-rows: auto 1fr auto;
+  }
+
+  /* Sticky toolbar - Single horizontally scrollable row for TradingView feel */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 6px 8px;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  
+  .toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .toolbar-left, .toolbar-right {
+    display: contents; 
+  }
+
+  /* Reset flex/order overrides from 768px */
+  .toolbar-left > *, .toolbar-right > * {
+    order: initial !important;
+    margin: 0 !important;
+  }
+
+  /* Hide Logo and Price Info on mobile entirely to save space */
+  .logo, .price-info {
+    display: none !important;
+  }
+
+  /* Symbol button compact */
+  .symbol-btn {
+    font-size: 14px;
+    font-weight: 700;
+    padding: 0 8px;
+    height: 36px;
+    background: var(--bg-elevated);
+  }
+
+  /* Timeframe: scrollable row */
+  .timeframe-group {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: visible;
+    gap: 4px;
+  }
+
+  /* Ensure indicators are visible */
+  #indicators-btn {
+    display: flex;
+  }
+
+  /* Fix dropdowns being clipped by toolbar overflow-x */
+  .dropdown {
+    position: fixed !important;
+    top: 56px !important;
+    left: 10px !important;
+    right: 10px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    max-height: 50vh;
+    overflow-y: auto;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Push Auth button to the right if there's space */
+  #auth-btn {
+    margin-left: auto !important;
+  }
+
+  /* ==== DRAWING TOOLBAR: move to bottom horizontal scrollable strip ==== */
+  .drawing-toolbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    width: 100%;
+    height: 52px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 12px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    border-right: none;
+    border-radius: 0;
+    z-index: 200;
+    gap: 12px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  
+  .drawing-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .main-content {
+    padding-bottom: 52px;
+  }
+
+  .draw-btn {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--bg-elevated);
+  }
+
+  /* Clear button no longer needs margin-top auto */
+  .draw-btn[data-tool="clear"] {
+    margin-top: 0;
+  }
+
+  /* Chart area: leave room for bottom drawing toolbar */
+  .chart-area {
+    bottom: 52px;
+    top: 0;
+    left: 0;
+    right: 0;
+    position: absolute;
+  }
+
+  /* Move candle timer to not overlap toolbar */
+  .candle-timer {
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  /* OHLCV legend — below candle timer, more compact */
+  .ohlcv-legend {
+    top: 8px;
+    left: 8px;
+    padding: 4px 8px;
+    gap: 4px;
+    font-size: 10px;
+    display: none; /* hide on small screens, too cramped */
+  }
+
+  /* Go-to-present button above bottom bar */
+  .go-to-present {
+    bottom: 64px;
+    right: 12px;
+  }
+
+  /* Log scale button above bottom bar */
+  .scale-toggle-btn {
+    bottom: 64px;
+    right: 12px;
+  }
+
+  /* Active indicators bar — compact pill strip */
+  .active-indicators {
+    padding: 4px 8px;
+    height: 26px;
+    gap: 4px;
+    font-size: 10px;
+  }
+  .indicator-chip {
+    height: 18px;
+    font-size: 10px;
+    padding: 0 6px;
+  }
+
+  /* Watchlist overlay covers full screen on mobile */
+  .watchlist-panel.mobile-open {
+    top: 48px;
+    bottom: 52px;
+    width: 100%;
+    box-shadow: none;
+  }
+
+  /* Settings panel full width on mobile */
+  .settings-panel {
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Auth modal — bottom sheet on mobile */
+  .auth-modal {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
+
+  .auth-modal.hidden {
+    transform: translateY(100%);
+    opacity: 1;
+  }
+
+  .auth-modal-header {
+    padding: 16px 20px 12px;
+  }
+
+  /* Bottom drawer handle for auth modal */
+  .auth-modal::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--border-light);
+    border-radius: 2px;
+    margin: 0 auto 12px;
+  }
+}
+
+/* ── 380px: tiny phones ─────────────────────────────────────── */
+@media (max-width: 380px) {
+  .timeframe-group button {
+    padding: 0 4px;
+    font-size: 10px;
+  }
+
+  .symbol-btn {
+    font-size: 12px;
+  }
+
+  .draw-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .current-price {
+    font-size: 13px;
+  }
+
+  .price-change-percent {
+    display: none;
+  }
+}
+
+/* Auth Mode Toggle */
+.auth-mode-toggle { display: flex; gap: 8px; margin-bottom: 24px; padding: 4px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+.mode-btn { flex: 1; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); background: transparent; transition: all 0.2s; cursor: pointer; }
+.mode-btn:hover { color: var(--text-primary); }
+.mode-btn.active { background: rgba(74, 158, 255, 0.15); color: var(--blue); border: 1px solid rgba(74, 158, 255, 0.3); box-shadow: 0 4px 12px rgba(74, 158, 255, 0.1); }

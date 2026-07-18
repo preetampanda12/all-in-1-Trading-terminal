@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+requests
+pandas
+ccxt
+aiohttp
+aiosqlite
+websockets

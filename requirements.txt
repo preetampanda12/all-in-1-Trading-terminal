@@ -4,5 +4,5 @@ requests
 pandas
 ccxt
 aiohttp
-aiosqlite
+asyncpg
 websockets

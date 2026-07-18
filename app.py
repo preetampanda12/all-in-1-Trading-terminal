@@ -1,80 +1,87 @@
 import asyncio
 import time
 import json
-import sqlite3
-import aiosqlite
 import websockets
 import requests
+import asyncpg
+import os
 import ccxt.async_support as ccxt
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from fastapi.staticfiles import StaticFiles
 
 # ─── Config ───────────────────────────────────────────────────────────────────
-DB_PATH = "liquidations.db"
+DATABASE_URL = os.environ.get("SUPABASE_DB_URL", "")
 ACTIVE_SYMBOLS = {"BTCUSDT"}
+db_pool = None
 
 # ─── Database Setup ───────────────────────────────────────────────────────────
-def init_db():
-    con = sqlite3.connect(DB_PATH)
-    # 1. Real liquidations (WebSocket) - keep long term history
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS real_liquidations (
-            id        INTEGER PRIMARY KEY AUTOINCREMENT,
-            ts        REAL    NOT NULL,
-            symbol    TEXT    NOT NULL,
-            side      TEXT    NOT NULL,
-            price     REAL    NOT NULL,
-            qty       REAL    NOT NULL,
-            usd_value REAL    NOT NULL
-        )
-    """)
-    con.execute("CREATE INDEX IF NOT EXISTS idx_rl_sym_ts ON real_liquidations(symbol, ts)")
+async def init_db():
+    global db_pool
+    if not DATABASE_URL:
+        print("[DB] Warning: SUPABASE_DB_URL not set. Database will not work!")
+        return
+        
+    db_pool = await asyncpg.create_pool(DATABASE_URL)
     
-    # 2. Order Book Heatmap (Estimated Liquidations) - keep only 24 hours to save space
-    con.execute("""
-        CREATE TABLE IF NOT EXISTS ob_heatmap (
-            id        INTEGER PRIMARY KEY AUTOINCREMENT,
-            ts        REAL    NOT NULL,
-            symbol    TEXT    NOT NULL,
-            price     REAL    NOT NULL,
-            usd_value REAL    NOT NULL,
-            side      TEXT    NOT NULL
-        )
-    """)
-    con.execute("CREATE INDEX IF NOT EXISTS idx_ob_sym_ts ON ob_heatmap(symbol, ts)")
-    con.commit()
-    con.close()
-    print("[DB] Initialized liquidations.db with mixed tables.")
+    async with db_pool.acquire() as con:
+        # 1. Real liquidations (WebSocket) - keep long term history
+        await con.execute("""
+            CREATE TABLE IF NOT EXISTS real_liquidations (
+                id        SERIAL PRIMARY KEY,
+                ts        DOUBLE PRECISION NOT NULL,
+                symbol    TEXT    NOT NULL,
+                side      TEXT    NOT NULL,
+                price     DOUBLE PRECISION NOT NULL,
+                qty       DOUBLE PRECISION NOT NULL,
+                usd_value DOUBLE PRECISION NOT NULL
+            )
+        """)
+        await con.execute("CREATE INDEX IF NOT EXISTS idx_rl_sym_ts ON real_liquidations(symbol, ts)")
+        
+        # 2. Order Book Heatmap (Estimated Liquidations) - keep only 24 hours to save space
+        await con.execute("""
+            CREATE TABLE IF NOT EXISTS ob_heatmap (
+                id        SERIAL PRIMARY KEY,
+                ts        DOUBLE PRECISION NOT NULL,
+                symbol    TEXT    NOT NULL,
+                price     DOUBLE PRECISION NOT NULL,
+                usd_value DOUBLE PRECISION NOT NULL,
+                side      TEXT    NOT NULL
+            )
+        """)
+        await con.execute("CREATE INDEX IF NOT EXISTS idx_ob_sym_ts ON ob_heatmap(symbol, ts)")
+        print("[DB] Connected to Supabase and initialized tables.")
 
 async def save_real_liquidation(symbol, side, price, qty):
+    if not db_pool: return
     usd_value = price * qty
-    async with aiosqlite.connect(DB_PATH) as db:
+    async with db_pool.acquire() as db:
         await db.execute(
-            "INSERT INTO real_liquidations(ts,symbol,side,price,qty,usd_value) VALUES(?,?,?,?,?,?)",
-            (time.time(), symbol, side, price, qty, usd_value)
+            "INSERT INTO real_liquidations(ts,symbol,side,price,qty,usd_value) VALUES($1,$2,$3,$4,$5,$6)",
+            time.time(), symbol, side, price, qty, usd_value
         )
-        await db.commit()
 
 async def save_ob_heatmap_batch(symbol, ts, records):
     """records: list of (price, usd_value, side)"""
-    async with aiosqlite.connect(DB_PATH) as db:
+    if not db_pool: return
+    async with db_pool.acquire() as db:
         data = [(ts, symbol, r[0], r[1], r[2]) for r in records]
         await db.executemany(
-            "INSERT INTO ob_heatmap(ts,symbol,price,usd_value,side) VALUES(?,?,?,?,?)",
+            "INSERT INTO ob_heatmap(ts,symbol,price,usd_value,side) VALUES($1,$2,$3,$4,$5)",
             data
         )
-        await db.commit()
 
 async def cleanup_old_ob_data():
     """Delete Order Book data older than 24 hours to save storage."""
     while True:
         try:
-            cutoff = time.time() - (24 * 3600)
-            async with aiosqlite.connect(DB_PATH) as db:
-                await db.execute("DELETE FROM ob_heatmap WHERE ts < ?", (cutoff,))
-                await db.commit()
-            print("[CLEANUP] Deleted ob_heatmap data older than 24h.")
+            if db_pool:
+                cutoff = time.time() - (24 * 3600)
+                async with db_pool.acquire() as db:
+                    await db.execute("DELETE FROM ob_heatmap WHERE ts < $1", cutoff)
+                print("[CLEANUP] Deleted ob_heatmap data older than 24h.")
         except Exception as e:
             print(f"[CLEANUP] Error: {e}")
         await asyncio.sleep(3600)  # Run every hour
@@ -203,7 +210,7 @@ async def listen_liquidations():
 # ─── Lifespan ─────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    await init_db()
     task1 = asyncio.create_task(listen_liquidations())
     task2 = asyncio.create_task(poll_order_book_heatmap())
     task3 = asyncio.create_task(cleanup_old_ob_data())
@@ -211,9 +218,8 @@ async def lifespan(app: FastAPI):
     task1.cancel()
     task2.cancel()
     task3.cancel()
-
-import os
-from fastapi.staticfiles import StaticFiles
+    if db_pool:
+        await db_pool.close()
 
 # ─── App & API ────────────────────────────────────────────────────────────────
 app = FastAPI(lifespan=lifespan)
@@ -250,19 +256,20 @@ async def get_chart_data(symbol: str = "BTCUSDT", interval: str = "1h"):
     candles = fetch_klines_sync(symbol, interval)
     current_price = candles[-1]["close"] if candles else 0
 
-    # 1. Fetch OB Heatmap (Background) - max 24h
+    ob_rows = []
+    rl_rows = []
     ob_since = time.time() - (24 * 3600)
-    ob_slots = {}
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
-        ob_rows = await db.execute_fetchall(
-            "SELECT ts, price, usd_value, side FROM ob_heatmap WHERE symbol=? AND ts>=? ORDER BY ts ASC",
-            (symbol, ob_since)
-        )
-        rl_rows = await db.execute_fetchall(
-            "SELECT ts, price, qty, usd_value, side FROM real_liquidations WHERE symbol=? ORDER BY ts ASC",
-            (symbol,)
-        )
+    
+    if db_pool:
+        async with db_pool.acquire() as db:
+            ob_rows = await db.fetch(
+                "SELECT ts, price, usd_value, side FROM ob_heatmap WHERE symbol=$1 AND ts>=$2 ORDER BY ts ASC",
+                symbol, ob_since
+            )
+            rl_rows = await db.fetch(
+                "SELECT ts, price, qty, usd_value, side FROM real_liquidations WHERE symbol=$1 ORDER BY ts ASC",
+                symbol
+            )
     
     # Process OB Heatmap (bucketed by time and price)
     TIME_SLOT = 600 # 10 mins

@@ -25,7 +25,7 @@ async def init_db():
         
     try:
         # Supabase requires SSL, so we ensure the URL uses it
-        db_pool = await asyncpg.create_pool(DATABASE_URL)
+        db_pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=4)
         
         async with db_pool.acquire() as con:
             # 1. Real liquidations (WebSocket) - keep long term history

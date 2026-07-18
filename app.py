@@ -121,7 +121,7 @@ async def fetch_aggregated_depth_and_save(raw_symbol: str, current_price: float)
     else:
         ccxt_symbol = f"{raw_symbol[:-3]}/{raw_symbol[-3:]}"
 
-    exchanges = [ccxt.binance(), ccxt.bybit(), ccxt.coinbase()]
+    exchanges = [ccxt.binanceus(), ccxt.coinbase(), ccxt.kraken()]
     tasks = [fetch_exchange_ob(ex, ccxt_symbol) for ex in exchanges]
     results = await asyncio.gather(*tasks)
 

@@ -23,36 +23,41 @@ async def init_db():
         print("[DB] Warning: SUPABASE_DB_URL not set. Database will not work!")
         return
         
-    db_pool = await asyncpg.create_pool(DATABASE_URL)
-    
-    async with db_pool.acquire() as con:
-        # 1. Real liquidations (WebSocket) - keep long term history
-        await con.execute("""
-            CREATE TABLE IF NOT EXISTS real_liquidations (
-                id        SERIAL PRIMARY KEY,
-                ts        DOUBLE PRECISION NOT NULL,
-                symbol    TEXT    NOT NULL,
-                side      TEXT    NOT NULL,
-                price     DOUBLE PRECISION NOT NULL,
-                qty       DOUBLE PRECISION NOT NULL,
-                usd_value DOUBLE PRECISION NOT NULL
-            )
-        """)
-        await con.execute("CREATE INDEX IF NOT EXISTS idx_rl_sym_ts ON real_liquidations(symbol, ts)")
+    try:
+        # Supabase requires SSL, so we ensure the URL uses it
+        db_pool = await asyncpg.create_pool(DATABASE_URL)
         
-        # 2. Order Book Heatmap (Estimated Liquidations) - keep only 24 hours to save space
-        await con.execute("""
-            CREATE TABLE IF NOT EXISTS ob_heatmap (
-                id        SERIAL PRIMARY KEY,
-                ts        DOUBLE PRECISION NOT NULL,
-                symbol    TEXT    NOT NULL,
-                price     DOUBLE PRECISION NOT NULL,
-                usd_value DOUBLE PRECISION NOT NULL,
-                side      TEXT    NOT NULL
-            )
-        """)
-        await con.execute("CREATE INDEX IF NOT EXISTS idx_ob_sym_ts ON ob_heatmap(symbol, ts)")
-        print("[DB] Connected to Supabase and initialized tables.")
+        async with db_pool.acquire() as con:
+            # 1. Real liquidations (WebSocket) - keep long term history
+            await con.execute("""
+                CREATE TABLE IF NOT EXISTS real_liquidations (
+                    id        SERIAL PRIMARY KEY,
+                    ts        DOUBLE PRECISION NOT NULL,
+                    symbol    TEXT    NOT NULL,
+                    side      TEXT    NOT NULL,
+                    price     DOUBLE PRECISION NOT NULL,
+                    qty       DOUBLE PRECISION NOT NULL,
+                    usd_value DOUBLE PRECISION NOT NULL
+                )
+            """)
+            await con.execute("CREATE INDEX IF NOT EXISTS idx_rl_sym_ts ON real_liquidations(symbol, ts)")
+            
+            # 2. Order Book Heatmap (Estimated Liquidations) - keep only 24 hours to save space
+            await con.execute("""
+                CREATE TABLE IF NOT EXISTS ob_heatmap (
+                    id        SERIAL PRIMARY KEY,
+                    ts        DOUBLE PRECISION NOT NULL,
+                    symbol    TEXT    NOT NULL,
+                    price     DOUBLE PRECISION NOT NULL,
+                    usd_value DOUBLE PRECISION NOT NULL,
+                    side      TEXT    NOT NULL
+                )
+            """)
+            await con.execute("CREATE INDEX IF NOT EXISTS idx_ob_sym_ts ON ob_heatmap(symbol, ts)")
+            print("[DB] Connected to Supabase and initialized tables.")
+    except Exception as e:
+        print(f"[DB ERROR] Failed to connect to database: {e}")
+        db_pool = None
 
 async def save_real_liquidation(symbol, side, price, qty):
     if not db_pool: return

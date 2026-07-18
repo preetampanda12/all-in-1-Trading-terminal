@@ -263,6 +263,7 @@ async def get_chart_data(symbol: str = "BTCUSDT", interval: str = "1h"):
 
     ob_rows = []
     rl_rows = []
+    ob_slots = {}
     ob_since = time.time() - (24 * 3600)
     
     if db_pool:
